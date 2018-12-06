@@ -1,0 +1,17 @@
+.slider_title{
+width:300px;
+}
+
+
+.slider .login,.register {
+	background:none;
+	display:none;
+
+}
+.slider .contact h4{
+	color:#42bc7f;
+	margin-bottom:20px;
+}
+.slider .contact input{
+		width:100%
+}

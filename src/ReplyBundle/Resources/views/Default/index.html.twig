@@ -1,0 +1,50 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+    {#    <A HREF="{{ path('fos_user_security_login') }}">Login</A>
+        <A HREF="{{ path('fos_user_registration_register') }}">Register</A>#}
+                  
+                <!-- Slider Area -->
+    <section id="slider" class="slider" style="background-image:url({{ asset('img/slider.jpg') }})">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 col-sm-12 col-xs-12">
+                    <div class="text">
+                        <h1 class="slider_title">Reply Luxembourg</h1>
+                        
+                        <div class="button">
+                            <a  class="btn primary" id="login" ><i class="fa fa-briefcase"></i>Login</a>
+                            <a  class="btn" id="register"><i class="fa fa-phone"></i>Register</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-sm-12 col-xs-12">  
+                    <div class="text contact login">                        
+                        <h4>Login</h4>
+                        <form action="{{ path('fos_user_security_check') }}" method="post" class="form">
+                            <div class="form-group">     <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+                                <div class="form-group">      <input type="text" name="_username" placeholder="enter username" /></div>
+                                <div class="form-group">      <input type="password" name="_password" placeholder="enter password" /></div>
+                                <div class="form-group">      <input type="checkbox" name="_remember_me" checked /></div>
+                                <div class="form-group">    <input class="btn primary" type="submit" value="Submit" /></div> </div>
+                            </div>
+                        </form>
+                    
+                    <div class="text contact register">                        
+                        <h4>Register</h4>
+                        {{ form_start(form, {'method': 'post', 'action': path('fos_user_registration_register'), 'attr': {'class': 'form'}}) }}
+                        <div class="form-group">   
+                            <div class="form-group col-md-6 col-sm-6 col-xs-12">    {{ form_row(form.name) }}</div>
+                            <div class="form-group col-md-6 col-sm-6 col-xs-12">     {{ form_row(form.surname) }}</div>
+                            <div class="form-group col-md-6 col-sm-6 col-xs-12">     {{ form_row(form.username) }}</div>
+                            <div class="form-group col-md-6 col-sm-6 col-xs-12">      {{ form_row(form.email) }}</div>
+                            <div class="form-group col-md-6 col-sm-6 col-xs-12">     {{ form_row(form.plainPassword.first) }} </div>
+                            <div class="form-group col-md-6 col-sm-6 col-xs-12">     {{ form_row(form.plainPassword.second) }} </div>
+                            <div class="form-group col-md-6 col-sm-12 col-xs-12">    <button class="btn primary" type="submit">Register!</button></div>   
+                        </div>                        
+                        {{ form_end(form) }}                                                                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

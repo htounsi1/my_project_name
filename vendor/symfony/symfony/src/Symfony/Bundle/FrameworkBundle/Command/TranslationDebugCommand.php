@@ -11,19 +11,20 @@
 
 namespace Symfony\Bundle\FrameworkBundle\Command;
 
-use Symfony\Component\Console\Style\SymfonyStyle;
-use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Exception\InvalidArgumentException;
 use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Translation\Catalogue\MergeOperation;
+use Symfony\Component\Translation\DataCollectorTranslator;
 use Symfony\Component\Translation\Extractor\ExtractorInterface;
+use Symfony\Component\Translation\LoggingTranslator;
 use Symfony\Component\Translation\MessageCatalogue;
 use Symfony\Component\Translation\Reader\TranslationReaderInterface;
 use Symfony\Component\Translation\Translator;
-use Symfony\Component\Translation\DataCollectorTranslator;
-use Symfony\Component\Translation\LoggingTranslator;
 use Symfony\Component\Translation\TranslatorInterface;
 
 /**
@@ -51,7 +52,7 @@ class TranslationDebugCommand extends ContainerAwareCommand
     public function __construct($translator = null, TranslationReaderInterface $reader = null, ExtractorInterface $extractor = null, $defaultTransPath = null, $defaultViewsPath = null)
     {
         if (!$translator instanceof TranslatorInterface) {
-            @trigger_error(sprintf('%s() expects an instance of "%s" as first argument since version 3.4. Not passing it is deprecated and will throw a TypeError in 4.0.', __METHOD__, TranslatorInterface::class), E_USER_DEPRECATED);
+            @trigger_error(sprintf('%s() expects an instance of "%s" as first argument since Symfony 3.4. Not passing it is deprecated and will throw a TypeError in 4.0.', __METHOD__, TranslatorInterface::class), E_USER_DEPRECATED);
 
             parent::__construct($translator);
 
@@ -182,7 +183,7 @@ EOF
                 $viewsPaths = array($input->getArgument('bundle').'/Resources/views');
 
                 if (!is_dir($transPaths[0])) {
-                    throw new \InvalidArgumentException(sprintf('"%s" is neither an enabled bundle nor a directory.', $transPaths[0]));
+                    throw new InvalidArgumentException(sprintf('"%s" is neither an enabled bundle nor a directory.', $transPaths[0]));
                 }
             }
         } elseif ($input->getOption('all')) {
@@ -249,8 +250,8 @@ EOF
                     $states[] = self::MESSAGE_UNUSED;
                 }
 
-                if (!in_array(self::MESSAGE_UNUSED, $states) && true === $input->getOption('only-unused')
-                    || !in_array(self::MESSAGE_MISSING, $states) && true === $input->getOption('only-missing')) {
+                if (!\in_array(self::MESSAGE_UNUSED, $states) && true === $input->getOption('only-unused')
+                    || !\in_array(self::MESSAGE_MISSING, $states) && true === $input->getOption('only-missing')) {
                     continue;
                 }
 
@@ -314,7 +315,7 @@ EOF
             if (mb_strlen($string, $encoding) > $length) {
                 return mb_substr($string, 0, $length - 3, $encoding).'...';
             }
-        } elseif (strlen($string) > $length) {
+        } elseif (\strlen($string) > $length) {
             return substr($string, 0, $length - 3).'...';
         }
 

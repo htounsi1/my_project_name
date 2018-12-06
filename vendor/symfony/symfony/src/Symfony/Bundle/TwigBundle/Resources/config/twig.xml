@@ -114,6 +114,10 @@
 
         <service id="twig.extension.debug" class="Twig\Extension\DebugExtension" />
 
+        <service id="twig.extension.weblink" class="Symfony\Bridge\Twig\Extension\WebLinkExtension">
+            <argument type="service" id="request_stack" />
+        </service>
+
         <service id="twig.translation.extractor" class="Symfony\Bridge\Twig\Translation\TwigExtractor">
             <argument type="service" id="twig" />
             <tag name="translation.extractor" alias="twig" />
@@ -128,6 +132,7 @@
             <tag name="monolog.logger" channel="request" />
             <argument>%twig.exception_listener.controller%</argument>
             <argument type="service" id="logger" on-invalid="null" />
+            <argument>%kernel.debug%</argument>
         </service>
 
         <service id="twig.controller.exception" class="Symfony\Bundle\TwigBundle\Controller\ExceptionController" public="true">

@@ -11,14 +11,15 @@
 
 namespace Symfony\Bundle\FrameworkBundle\Command;
 
+use Symfony\Component\Console\Exception\InvalidArgumentException;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\HttpKernel\KernelInterface;
-use Symfony\Component\Translation\Catalogue\TargetOperation;
 use Symfony\Component\Translation\Catalogue\MergeOperation;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Translation\Catalogue\TargetOperation;
 use Symfony\Component\Translation\Extractor\ExtractorInterface;
 use Symfony\Component\Translation\MessageCatalogue;
 use Symfony\Component\Translation\Reader\TranslationReaderInterface;
@@ -54,7 +55,7 @@ class TranslationUpdateCommand extends ContainerAwareCommand
     public function __construct($writer = null, TranslationReaderInterface $reader = null, ExtractorInterface $extractor = null, $defaultLocale = null, $defaultTransPath = null, $defaultViewsPath = null)
     {
         if (!$writer instanceof TranslationWriterInterface) {
-            @trigger_error(sprintf('%s() expects an instance of "%s" as first argument since version 3.4. Not passing it is deprecated and will throw a TypeError in 4.0.', __METHOD__, TranslationWriterInterface::class), E_USER_DEPRECATED);
+            @trigger_error(sprintf('%s() expects an instance of "%s" as first argument since Symfony 3.4. Not passing it is deprecated and will throw a TypeError in 4.0.', __METHOD__, TranslationWriterInterface::class), E_USER_DEPRECATED);
 
             parent::__construct($writer);
 
@@ -151,7 +152,7 @@ EOF
 
         // check format
         $supportedFormats = $this->writer->getFormats();
-        if (!in_array($input->getOption('output-format'), $supportedFormats)) {
+        if (!\in_array($input->getOption('output-format'), $supportedFormats)) {
             $errorIo->error(array('Wrong output format', 'Supported formats are: '.implode(', ', $supportedFormats).'.'));
 
             return 1;
@@ -192,7 +193,7 @@ EOF
                 $currentName = $transPaths[0];
 
                 if (!is_dir($transPaths[0])) {
-                    throw new \InvalidArgumentException(sprintf('<error>"%s" is neither an enabled bundle nor a directory.</error>', $transPaths[0]));
+                    throw new InvalidArgumentException(sprintf('<error>"%s" is neither an enabled bundle nor a directory.</error>', $transPaths[0]));
                 }
             }
         }
@@ -206,7 +207,7 @@ EOF
         $prefix = $input->getOption('prefix');
         // @deprecated since version 3.4, to be removed in 4.0 along with the --no-prefix option
         if ($input->getOption('no-prefix')) {
-            @trigger_error('The "--no-prefix" option is deprecated since version 3.4 and will be removed in 4.0. Use the "--prefix" option with an empty string as value instead.', E_USER_DEPRECATED);
+            @trigger_error('The "--no-prefix" option is deprecated since Symfony 3.4 and will be removed in 4.0. Use the "--prefix" option with an empty string as value instead.', E_USER_DEPRECATED);
             $prefix = '';
         }
         $this->extractor->setPrefix($prefix);
@@ -236,7 +237,7 @@ EOF
             : new MergeOperation($currentCatalogue, $extractedCatalogue);
 
         // Exit if no messages found.
-        if (!count($operation->getDomains())) {
+        if (!\count($operation->getDomains())) {
             $errorIo->warning('No translation messages were found.');
 
             return;
@@ -262,7 +263,7 @@ EOF
                     }, array_keys($operation->getObsoleteMessages($domain)))
                 );
 
-                $domainMessagesCount = count($list);
+                $domainMessagesCount = \count($list);
 
                 $io->section(sprintf('Messages extracted for domain "<info>%s</info>" (%d message%s)', $domain, $domainMessagesCount, $domainMessagesCount > 1 ? 's' : ''));
                 $io->listing($list);

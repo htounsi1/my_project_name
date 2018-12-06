@@ -12,9 +12,9 @@
 namespace Symfony\Bundle\FrameworkBundle\Tests\Command;
 
 use PHPUnit\Framework\TestCase;
+use Symfony\Bundle\FrameworkBundle\Command\TranslationDebugCommand;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
-use Symfony\Bundle\FrameworkBundle\Command\TranslationDebugCommand;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpKernel;
 
@@ -201,7 +201,7 @@ class TranslationDebugCommandTest extends TestCase
 
     /**
      * @group legacy
-     * @expectedDeprecation Symfony\Bundle\FrameworkBundle\Command\TranslationDebugCommand::__construct() expects an instance of "Symfony\Component\Translation\TranslatorInterface" as first argument since version 3.4. Not passing it is deprecated and will throw a TypeError in 4.0.
+     * @expectedDeprecation Symfony\Bundle\FrameworkBundle\Command\TranslationDebugCommand::__construct() expects an instance of "Symfony\Component\Translation\TranslatorInterface" as first argument since Symfony 3.4. Not passing it is deprecated and will throw a TypeError in 4.0.
      */
     public function testLegacyDebugCommand()
     {

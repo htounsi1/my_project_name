@@ -12,22 +12,22 @@
 namespace Symfony\Component\DependencyInjection\Tests\Loader;
 
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\DependencyInjection\Argument\IteratorArgument;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Reference;
-use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
-use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
-use Symfony\Component\DependencyInjection\Loader\IniFileLoader;
-use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
-use Symfony\Component\Config\Loader\LoaderResolver;
 use Symfony\Component\Config\FileLocator;
+use Symfony\Component\Config\Loader\LoaderResolver;
 use Symfony\Component\Config\Resource\FileResource;
 use Symfony\Component\Config\Resource\GlobResource;
+use Symfony\Component\DependencyInjection\Argument\IteratorArgument;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Loader\IniFileLoader;
+use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
+use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
+use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
+use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\DependencyInjection\Tests\Fixtures\Bar;
 use Symfony\Component\DependencyInjection\Tests\Fixtures\BarInterface;
 use Symfony\Component\DependencyInjection\Tests\Fixtures\CaseSensitiveClass;
-use Symfony\Component\DependencyInjection\Tests\Fixtures\Prototype;
 use Symfony\Component\DependencyInjection\Tests\Fixtures\NamedArgumentsDummy;
+use Symfony\Component\DependencyInjection\Tests\Fixtures\Prototype;
 use Symfony\Component\ExpressionLanguage\Expression;
 
 class YamlFileLoaderTest extends TestCase
@@ -141,7 +141,7 @@ class YamlFileLoaderTest extends TestCase
         $loader = new YamlFileLoader($container, new FileLocator(self::$fixturesPath.'/yaml'));
         $loader->load('services6.yml');
         $services = $container->getDefinitions();
-        $this->assertTrue(isset($services['foo']), '->load() parses service elements');
+        $this->assertArrayHasKey('foo', $services, '->load() parses service elements');
         $this->assertFalse($services['not_shared']->isShared(), '->load() parses the shared flag');
         $this->assertInstanceOf('Symfony\\Component\\DependencyInjection\\Definition', $services['foo'], '->load() converts service element to Definition instances');
         $this->assertEquals('FooClass', $services['foo']->getClass(), '->load() parses the class attribute');
@@ -159,10 +159,10 @@ class YamlFileLoaderTest extends TestCase
         $this->assertEquals(array('foo', new Reference('baz')), $services['Acme\WithShortCutArgs']->getArguments(), '->load() parses short service definition');
 
         $aliases = $container->getAliases();
-        $this->assertTrue(isset($aliases['alias_for_foo']), '->load() parses aliases');
+        $this->assertArrayHasKey('alias_for_foo', $aliases, '->load() parses aliases');
         $this->assertEquals('foo', (string) $aliases['alias_for_foo'], '->load() parses aliases');
         $this->assertTrue($aliases['alias_for_foo']->isPublic());
-        $this->assertTrue(isset($aliases['another_alias_for_foo']));
+        $this->assertArrayHasKey('another_alias_for_foo', $aliases);
         $this->assertEquals('foo', (string) $aliases['another_alias_for_foo']);
         $this->assertFalse($aliases['another_alias_for_foo']->isPublic());
         $this->assertTrue(isset($aliases['another_third_alias_for_foo']));
@@ -206,8 +206,8 @@ class YamlFileLoaderTest extends TestCase
         $services = $container->getDefinitions();
         $parameters = $container->getParameterBag()->all();
 
-        $this->assertTrue(isset($services['project.service.bar']), '->load() parses extension elements');
-        $this->assertTrue(isset($parameters['project.parameter.bar']), '->load() parses extension elements');
+        $this->assertArrayHasKey('project.service.bar', $services, '->load() parses extension elements');
+        $this->assertArrayHasKey('project.parameter.bar', $parameters, '->load() parses extension elements');
 
         $this->assertEquals('BAR', $services['project.service.foo']->getClass(), '->load() parses extension elements');
         $this->assertEquals('BAR', $parameters['project.parameter.foo'], '->load() parses extension elements');
@@ -219,6 +219,17 @@ class YamlFileLoaderTest extends TestCase
             $this->assertInstanceOf('\InvalidArgumentException', $e, '->load() throws an InvalidArgumentException if the tag is not valid');
             $this->assertStringStartsWith('There is no extension able to load the configuration for "foobarfoobar" (in', $e->getMessage(), '->load() throws an InvalidArgumentException if the tag is not valid');
         }
+    }
+
+    public function testExtensionWithNullConfig()
+    {
+        $container = new ContainerBuilder();
+        $container->registerExtension(new \ProjectExtension());
+        $loader = new YamlFileLoader($container, new FileLocator(self::$fixturesPath.'/yaml'));
+        $loader->load('null_config.yml');
+        $container->compile();
+
+        $this->assertSame(array(null), $container->getParameter('project.configs'));
     }
 
     public function testSupports()
@@ -382,8 +393,8 @@ class YamlFileLoaderTest extends TestCase
 
         $resources = $container->getResources();
 
-        $fixturesDir = dirname(__DIR__).DIRECTORY_SEPARATOR.'Fixtures'.DIRECTORY_SEPARATOR;
-        $this->assertTrue(false !== array_search(new FileResource($fixturesDir.'yaml'.DIRECTORY_SEPARATOR.'services_prototype.yml'), $resources));
+        $fixturesDir = \dirname(__DIR__).\DIRECTORY_SEPARATOR.'Fixtures'.\DIRECTORY_SEPARATOR;
+        $this->assertTrue(false !== array_search(new FileResource($fixturesDir.'yaml'.\DIRECTORY_SEPARATOR.'services_prototype.yml'), $resources));
         $this->assertTrue(false !== array_search(new GlobResource($fixturesDir.'Prototype', '', true), $resources));
         $resources = array_map('strval', $resources);
         $this->assertContains('reflection.Symfony\Component\DependencyInjection\Tests\Fixtures\Prototype\Foo', $resources);

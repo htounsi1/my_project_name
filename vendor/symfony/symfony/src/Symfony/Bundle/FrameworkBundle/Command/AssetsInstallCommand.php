@@ -11,6 +11,7 @@
 
 namespace Symfony\Bundle\FrameworkBundle\Command;
 
+use Symfony\Component\Console\Exception\InvalidArgumentException;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -45,7 +46,7 @@ class AssetsInstallCommand extends ContainerAwareCommand
     public function __construct($filesystem = null)
     {
         if (!$filesystem instanceof Filesystem) {
-            @trigger_error(sprintf('%s() expects an instance of "%s" as first argument since version 3.4. Not passing it is deprecated and will throw a TypeError in 4.0.', __METHOD__, Filesystem::class), E_USER_DEPRECATED);
+            @trigger_error(sprintf('%s() expects an instance of "%s" as first argument since Symfony 3.4. Not passing it is deprecated and will throw a TypeError in 4.0.', __METHOD__, Filesystem::class), E_USER_DEPRECATED);
 
             parent::__construct($filesystem);
 
@@ -112,10 +113,10 @@ EOT
             if (!is_dir($targetArg)) {
                 // deprecated, logic to be removed in 4.0
                 // this allows the commands to work out of the box with web/ and public/
-                if (is_dir(dirname($targetArg).'/web')) {
-                    $targetArg = dirname($targetArg).'/web';
+                if (is_dir(\dirname($targetArg).'/web')) {
+                    $targetArg = \dirname($targetArg).'/web';
                 } else {
-                    throw new \InvalidArgumentException(sprintf('The target directory "%s" does not exist.', $input->getArgument('target')));
+                    throw new InvalidArgumentException(sprintf('The target directory "%s" does not exist.', $input->getArgument('target')));
                 }
             }
         }
@@ -174,13 +175,13 @@ EOT
                 }
 
                 if ($method === $expectedMethod) {
-                    $rows[] = array(sprintf('<fg=green;options=bold>%s</>', '\\' === DIRECTORY_SEPARATOR ? 'OK' : "\xE2\x9C\x94" /* HEAVY CHECK MARK (U+2714) */), $message, $method);
+                    $rows[] = array(sprintf('<fg=green;options=bold>%s</>', '\\' === \DIRECTORY_SEPARATOR ? 'OK' : "\xE2\x9C\x94" /* HEAVY CHECK MARK (U+2714) */), $message, $method);
                 } else {
-                    $rows[] = array(sprintf('<fg=yellow;options=bold>%s</>', '\\' === DIRECTORY_SEPARATOR ? 'WARNING' : '!'), $message, $method);
+                    $rows[] = array(sprintf('<fg=yellow;options=bold>%s</>', '\\' === \DIRECTORY_SEPARATOR ? 'WARNING' : '!'), $message, $method);
                 }
             } catch (\Exception $e) {
                 $exitCode = 1;
-                $rows[] = array(sprintf('<fg=red;options=bold>%s</>', '\\' === DIRECTORY_SEPARATOR ? 'ERROR' : "\xE2\x9C\x98" /* HEAVY BALLOT X (U+2718) */), $message, $e->getMessage());
+                $rows[] = array(sprintf('<fg=red;options=bold>%s</>', '\\' === \DIRECTORY_SEPARATOR ? 'ERROR' : "\xE2\x9C\x98" /* HEAVY BALLOT X (U+2718) */), $message, $e->getMessage());
             }
         }
         // remove the assets of the bundles that no longer exist
@@ -262,8 +263,8 @@ EOT
     private function symlink($originDir, $targetDir, $relative = false)
     {
         if ($relative) {
-            $this->filesystem->mkdir(dirname($targetDir));
-            $originDir = $this->filesystem->makePathRelative($originDir, realpath(dirname($targetDir)));
+            $this->filesystem->mkdir(\dirname($targetDir));
+            $originDir = $this->filesystem->makePathRelative($originDir, realpath(\dirname($targetDir)));
         }
         $this->filesystem->symlink($originDir, $targetDir);
         if (!file_exists($targetDir)) {

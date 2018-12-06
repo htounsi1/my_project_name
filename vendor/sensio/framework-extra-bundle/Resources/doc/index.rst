@@ -8,7 +8,17 @@ conventions and annotations. It allows for more concise controllers.
 Installation
 ------------
 
-Before using this bundle in your project, add it to your ``composer.json`` file:
+An official Symfony recipe is available for this bundle. To automatically
+install and configure it run:
+
+.. code-block:: bash
+
+    $ composer require annotations
+
+You're done!
+
+Alternatively, if you don't use Symfony Flex, add it to your ``composer.json``
+file:
 
 .. code-block:: bash
 
@@ -137,7 +147,7 @@ This example shows all the available annotations in action::
          * @Route("/{id}")
          * @Method("GET")
          * @ParamConverter("post", class="SensioBlogBundle:Post")
-         * @Template("SensioBlogBundle:Annot:show.html.twig", vars={"post"})
+         * @Template("@SensioBlog/annot/show.html.twig", vars={"post"})
          * @Cache(smaxage="15", lastmodified="post.getUpdatedAt()", etag="'Post' ~ post.getId() ~ post.getUpdatedAt()")
          * @IsGranted("ROLE_SPECIAL_USER")
          * @Security("has_role('ROLE_ADMIN') and is_granted('POST_SHOW', post)")
